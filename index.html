@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VORTEXHUB</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: #151619;
+    color: #f3f3f4;
+    font-family: Arial, sans-serif;
+}
+
+button {
+    font-family: inherit;
+}
+
+.app {
+    max-width: 900px;
+    min-height: 100vh;
+    margin: auto;
+}
+
+header {
+    height: 65px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 0 18px;
+    border-bottom: 1px solid #363940;
+    position: sticky;
+    top: 0;
+    background: #151619;
+    z-index: 5;
+}
+
+.menu {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 26px;
+}
+
+.logo {
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: 3px;
+}
+
+.username {
+    margin-left: auto;
+    color: #a8abb2;
+}
+
+main {
+    padding: 22px 17px 60px;
+}
+
+h1 {
+    font-size: 29px;
+    margin-bottom: 18px;
+}
+
+h2 {
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+.muted {
+    color: #a8abb2;
+}
+
+.card {
+    background: #202226;
+    border: 1px solid #363940;
+    border-radius: 15px;
+    padding: 18px;
+    margin-bottom: 13px;
+}
+
+.button {
+    background: #e7e7e9;
+    color: #17181b;
+    border: none;
+    padding: 11px 16px;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.dark-button {
+    background: #292b30;
+    color: white;
+    border: 1px solid #363940;
+    padding: 11px 16px;
+    border-radius: 10px;
+}
+
+.member {
+    width: 100%;
+    background: #202226;
+    color: white;
+    border: 1px solid #363940;
+    border-radius: 14px;
+    padding: 16px;
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+.member.selected {
+    background: #292b30;
+}
+
+.dot {
+    display: inline-block;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #e7e7e9;
+    margin-right: 10px;
+}
+
+.drawer {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 300px;
+    background: #191a1e;
+    border-right: 1px solid #363940;
+    padding: 25px;
+    z-index: 20;
+}
+
+.drawer button {
+    width: 100%;
+    padding: 14px;
+    text-align: left;
+    border: none;
+    background: transparent;
+    color: white;
+    border-radius: 9px;
+    margin-bottom: 3px;
+}
+
+.drawer button:hover {
+    background: #292b30;
+}
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: #0009;
+    z-index: 19;
+}
+
+.hidden {
+    display: none;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 11px;
+}
+
+@media(max-width:600px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .drawer {
+        width: 85vw;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+    <button class="menu" onclick="openMenu()">☰</button>
+    <div class="logo">VORTEXHUB</div>
+    <div class="username" id="username"></div>
+</header>
+
+<div id="overlay" class="overlay hidden" onclick="closeMenu()"></div>
+
+<div id="drawer" class="drawer hidden">
+
+    <h2 style="margin-bottom:20px;">VORTEXHUB</h2>
+
+    <button onclick="showHome()">🏠 Ana Sayfa</button>
+    <button onclick="showMembers()">👥 VORTEX</button>
+    <button onclick="showCovers()">🎵 Coverlar</button>
+    <button onclick="showRehearsals()">📅 Provalar</button>
+    <button onclick="showTasks()">🎯 Görevler</button>
+    <button onclick="showFiles()">📁 Dosyalar</button>
+    <button onclick="showSettings()">⚙️ Ayarlar</button>
+
+</div>
+
+<main id="content"></main>
+
+</div>
+
+<script>
+
+const members = [
+    "Eylul",
+    "Umay",
+    "Derin",
+    "Melis",
+    "Merve",
+    "Jale",
+    "Kübra",
+    "Melisa"
+];
+
+let currentUser = localStorage.getItem("vortexUser");
+
+function openMenu() {
+    document.getElementById("drawer").classList.remove("hidden");
+    document.getElementById("overlay").classList.remove("hidden");
+}
+
+function closeMenu() {
+    document.getElementById("drawer").classList.add("hidden");
+    document.getElementById("overlay").classList.add("hidden");
+}
+
+function selectMember(name) {
+    currentUser = name;
+    localStorage.setItem("vortexUser", name);
+
+    document.getElementById("username").innerText = name;
+
+    showHome();
+}
+
+function chooseMember() {
+
+    document.getElementById("content").innerHTML = `
+        <h1>VORTEX</h1>
+        <p class="muted" style="margin-bottom:20px;">
+            HANGİSİSİN?
+        </p>
+
+        ${members.map(member => `
+            <button
+                class="member"
+                onclick="selectMember('${member}')">
+
+                <span class="dot"></span>
+                ${member}
+
+            </button>
+        `).join("")}
+    `;
+}
+
+function showHome() {
+
+    closeMenu();
+
+    document.getElementById("content").innerHTML = `
+
+        <h1>Selam, ${currentUser}! ✦</h1>
+
+        <div class="card">
+            <h2>⚡ SONRAKİ PROVA</h2>
+            <strong>Perşembe · 19:30</strong>
+            <p class="muted" style="margin-top:7px;">
+                📍 Prova yeri
+            </p>
+
+            <button
+                class="dark-button"
+                style="margin-top:12px;"
+                onclick="showRehearsals()">
+
+                Provalara git →
+
+            </button>
+        </div>
+
+        <div class="card">
+            <h2>🎵 AKTİF COVER</h2>
+            <p class="muted">
+                Henüz cover eklenmedi.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>🎯 GÖREVLERİM</h2>
+            <p class="muted">
+                Aktif görevlerin burada görünecek.
+            </p>
+
+            <button
+                class="dark-button"
+                style="margin-top:12px;"
+                onclick="showTasks()">
+
+                Görevlere git →
+
+            </button>
+        </div>
+
+        <div class="card">
+            <h2>📢 DUYURULAR</h2>
+            <p class="muted">
+                VORTEX duyuruları burada görünecek.
+            </p>
+        </div>
+    `;
+}
+
+function showMembers() {
+
+    closeMenu();
+
+    document.getElementById("content").innerHTML = `
+        <h1>👥 VORTEX</h1>
+
+        <p class="muted" style="margin-bottom:18px;">
+            8 üye · Dansçı
+        </p>
+
+        ${members.map(member => `
+            <div class="member">
+                <span class="dot"></span>
+                <strong>${member}</strong>
+                <div class="muted"
+                     style="margin-top:7px;margin-left:22px;">
+                    VORTEX · Dansçı
+                </div>
+            </div>
+        `).join("")}
+    `;
+}
+
+function showCovers() {
+
+    closeMenu();
+
+    document.getElementById("content").innerHTML = `
+
+        <h1>🎵 COVERLAR</h1>
+
+        <div class="card">
+            <h2>Aktif Coverlar</h2>
+
+            <p class="muted">
+                Henüz cover eklenmedi.
+            </p>
+
+            <button class="button" style="margin-top:14px;"
+                onclick="alert('Cover ekleme ekranı yakında!')">
+                ＋ Cover ekle
+            </button>
+        </div>
+
+    `;
+}
+
+function showRehearsals() {
+
+    closeMenu();
+
+    document.getElementById("content").innerHTML = `
+
+        <h1>📅 PROVALAR</h1>
+
+        <div class="card">
+            <h2>SONRAKİ PROVA</h2>
+
+            <h1 style="margin-top:10px;">
+                Perşembe · 19:30
+            </h1>
+
+            <p class="muted">
+                📍 Prova yeri
+            </p>
+
+            <div style="margin-top:15px;display:flex;gap:8px;flex-wrap:wrap;">
+                <button class="button"
+                    onclick="alert('Geliyorum olarak işaretlendi!')">
+                    🟢 Geliyorum
+                </button>
+
+                <button class="dark-button"
+                    onclick="alert('Belki olarak işaretlendi!')">
+                    🟡 Belki
+                </button>
+
+                <button class="dark-button"
+                    onclick="alert('Gelemiyorum olarak işaretlendi!')">
+                    🔴 Gelemiyorum
+                </button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎯 PROVA PLANI</h2>
+
+            <p>19:30 — Isınma</p>
+            <p>19:45 — Cover çalışması</p>
+            <p>20:30 — Formation</p>
+            <p>21:00 — Tekrar / çekim</p>
+        </div>
+
+    `;
+}
+
+function showTasks() {
+
+    closeMenu();
+
+    document.getElementById("content").innerHTML = `
+
+        <h1>🎯 GÖREVLER</h1>
+
+        <div class="card">
+            <h2>📌 Bana Verilenler</h2>
+
+            <p class="muted">
+                Şimdilik aktif görev yok.
+            </p>
+
+            <button class="button"
+                style="margin-top:14px;"
+                onclick="alert('Yeni görev ekranı yakında!')">
+
+                ＋ Görev oluştur
+
+            </button>
+        </div>
+
+        <div class="card">
+            <h2>📤 Verdiklerim</h2>
+
+            <p class="muted">
+                Henüz görev vermedin.
+            </p>
+        </div>
+
+    `;
+}
+
+function showFiles() {
+
+    closeMenu();
+
+    document.getElementById("content").innerHTML = `
+
+        <h1>📁 DOSYALAR</h1>
+
+        <div class="card">
+            <h2>🎵 Müzikler</h2>
+            <p class="muted">
+                VORTEX müzikleri
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>🎥 Videolar</h2>
+            <p class="muted">
+                Prova ve cover videoları
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>📸 Fotoğraflar</h2>
+            <p class="muted">
+                Ortak fotoğraflar
+            </p>
+        </div>
+
+    `;
+}
+
+function showSettings() {
+
+    closeMenu();
+
+    document.getElementById("content").innerHTML = `
+
+        <h1>⚙️ AYARLAR</h1>
+
+        <div class="card">
+            <h2>👤 Profil</h2>
+            <p>${currentUser}</p>
+        </div>
+
+        <div class="card">
+            <h2>🔔 Bildirimler</h2>
+            <p class="muted">
+                Uygulama içi bildirimler
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>VORTEXHUB</h2>
+            <p class="muted">
+                Web sürümü · 1.0
+            </p>
+        </div>
+
+        <button class="dark-button"
+            onclick="logout()">
+            🚪 Çıkış yap
+        </button>
+
+    `;
+}
+
+function logout() {
+
+    localStorage.removeItem("vortexUser");
+
+    currentUser = null;
+
+    document.getElementById("username").innerText = "";
+
+    chooseMember();
+}
+
+if (currentUser) {
+
+    document.getElementById("username").innerText = currentUser;
+    showHome();
+
+} else {
+
+    chooseMember();
+
+}
+
+</script>
+
+</body>
+</html>
